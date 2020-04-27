@@ -85,21 +85,23 @@ for num in range(len(pre)):
     if key in performance.keys():
         for index in performance[key].keys():
             index = str(index)
-            if index in bookY.keys() and float(performance[key][index][1]) >= 10:
+            if index in bookY.keys() and float(performance[key][index][1]) >= 15:
                 bookY[index][num] = 1
                 bookPerformance[index][num] = performance[key][index][1]
-            elif index not in bookY.keys() and float(performance[key][index][1]) >= 10: 
+            elif index not in bookY.keys() and float(performance[key][index][1]) >= 15:
                 bookY[index] = [0]*len(pre)
                 bookY[index][num] = 1
-            elif index in bookY.keys() and float(bookPerformance[index][num]) > float(bookPerformance[index][before]):
+            elif index in bookY.keys() and (float(bookPerformance[index][num]) - float(bookPerformance[index][before])) >= 10:
+                print(float(bookPerformance[index][num]) - float(bookPerformance[index][before]))
                 bookY[index][num] = 1
                 bookPerformance[index][num] = performance[key][index][1]
-            elif index in bookY.keys() and float(bookPerformance[index][num]) < float(bookPerformance[index][before]):
+            elif index in bookY.keys() and (float(bookPerformance[index][before]) - float(bookPerformance[index][num])) >= 10:
+                print(float(bookPerformance[index][before]) - float(bookPerformance[index][num]))
                 bookY[index][num] = 1
                 bookPerformance[index][num] = performance[key][index][1]
             elif index in bookY.keys() and float(performance[key][index][1]) < 10 or index not in performance[key].keys() or index not in bookPerformance.keys():
                 bookY[index][num] = 0
-            elif index not in bookY.keys() and float(performance[key][index][1]) < 1 or index not in performance[key].keys() or index not in bookPerformance.keys() or float(bookPerformance[index][num]) == float(bookPerformance[index][before]) :
+            elif index not in bookY.keys() and float(performance[key][index][1]) < 10 or index not in performance[key].keys() or index not in bookPerformance.keys() or float(bookPerformance[index][num]) == float(bookPerformance[index][before]) :
                 bookY[index] = [0]*len(pre)
                 bookY[index][num] = 0
             elif index in bookY.keys() and float(bookPerformance[index][num]) == float(bookPerformance[index][before]):
@@ -124,11 +126,12 @@ for key in bookY.keys():
     	print("Trigger rates for", key, "is", v) 
 
 
+print("The following candidates showed insignificant change in polling performance for analysis")
 for key in bookY.keys():
     x = np.asarray(series_X, dtype=np.float32)
     y = np.asarray(bookY[key], dtype=np.float32)
     v = ECA.ECA(x, y, 10, tau=1, ts1=None, ts2=None)
-    if v[0] == 0: print("Candidate", key, "polled too low for event coincidence analysis.")
+    if v[0] == 0: print(key)
 
 
 
